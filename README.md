@@ -9,7 +9,7 @@
 
  
 * VR Application
-   This folder include files from Unity.In this project we use unity to development of the XR 
+  - This folder include files from Unity.In this project we use unity to development of the XR 
 
 * Windows Development
  
