@@ -2,10 +2,19 @@
 
 * In this project include 4 folders
   
-  * VR APPlication
+  * VR Application
   * Windows Development
   * Mac OS Development
   * AI
 
  
-* Windows d
+* VR Application
+   This folder include files from Unity.In this project we use unity to development of the XR 
+
+* Windows Development
+ 
+ 
+* Mac OS Development
+
+
+* AI
