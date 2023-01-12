@@ -12,10 +12,10 @@
   - This folder include files from Unity.In this project we use unity to development of the XR 
 
 * Windows Development
-  - These files will be added withing this semester
+  - These files will be added during this semester
  
 * Mac OS Development
-  - These files will be added withing this semester
+  - These files will be added during this semester
 
 * AI
-  - These files will be added withing this semester
+  - These files will be added during this semester
