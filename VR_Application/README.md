@@ -4,6 +4,6 @@
 
 * Download the Unity software.
 * Download the VR Project.
-* Open the Unity Hub and select the VR Project folder that you have downloaded.
+* Open the Unity Hub and open the VR Project folder that you have downloaded.
 
 
