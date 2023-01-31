@@ -5,7 +5,7 @@
   * VR Application
   * Windows Development
   * Mac OS Development
-  * AI
+  * AI Modeling
 
  
 * VR Application
