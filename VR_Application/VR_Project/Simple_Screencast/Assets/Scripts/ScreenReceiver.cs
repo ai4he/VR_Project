@@ -6,13 +6,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Net;
 
-
 public class ScreenReceiver : MonoBehaviour
 {
     public RawImage rawImage;
+    private Texture2D currentTexture;
     private Thread receiverThread;
     private TcpClient client;
     private NetworkStream networkStream;
+
+    private void Start()
+    {
+        currentTexture = new Texture2D(2, 2);
+    }
 
     public void StartReceiving(string host, int port)
     {
@@ -28,6 +33,10 @@ public class ScreenReceiver : MonoBehaviour
         {
             client.Close();
             client = null;
+        }
+        if (currentTexture != null)
+        {
+            Destroy(currentTexture);
         }
     }
 
@@ -60,19 +69,16 @@ public class ScreenReceiver : MonoBehaviour
                     if (read == 0) throw new Exception("Connection closed");
                     bytesRead += read;
                 }
-                // Debug.Log(bytesRead);
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
-                    // Texture2D texture = new Texture2D(2, 2);
-                    // texture.LoadRawTextureData(imageData);
-                    // texture.Apply();
-                    // rawImage.texture = texture;
-                    // rawImage.SetNativeSize();
-
                     Texture2D texture = new Texture2D(2, 2);
                     texture.LoadImage(imageData);
-                    // Debug.Log($"Applying texture of size {texture.width}x{texture.height}");
-                    rawImage.texture = texture;
+                    if (currentTexture != null)
+                    {
+                        Destroy(currentTexture);
+                    }
+                    currentTexture = texture;
+                    rawImage.texture = currentTexture;
                     rawImage.SetNativeSize();
                 });
             }
@@ -88,6 +94,99 @@ public class ScreenReceiver : MonoBehaviour
         StopReceiving();
     }
 }
+
+
+
+// using System;
+// using System.IO;
+// using System.Net.Sockets;
+// using System.Threading;
+// using UnityEngine;
+// using UnityEngine.UI;
+// using System.Net;
+
+
+// public class ScreenReceiver : MonoBehaviour
+// {
+//     public RawImage rawImage;
+//     private Thread receiverThread;
+//     private TcpClient client;
+//     private NetworkStream networkStream;
+
+//     public void StartReceiving(string host, int port)
+//     {
+//         receiverThread = new Thread(() => ReceiveData(host, port));
+//         receiverThread.IsBackground = true;
+//         receiverThread.Start();
+//     }
+
+//     public void StopReceiving()
+//     {
+//         receiverThread.Abort();
+//         if (client != null)
+//         {
+//             client.Close();
+//             client = null;
+//         }
+//     }
+
+//     void ReceiveData(string host, int port)
+//     {
+//         try
+//         {
+//             client = new TcpClient(host, port);
+//             networkStream = client.GetStream();
+
+//             byte[] lengthBuffer = new byte[4];
+//             while (true)
+//             {
+//                 int bytesRead = 0;
+//                 while (bytesRead < lengthBuffer.Length)
+//                 {
+//                     int read = networkStream.Read(lengthBuffer, bytesRead, lengthBuffer.Length - bytesRead);
+//                     if (read == 0) throw new Exception("Connection closed");
+//                     bytesRead += read;
+//                 }
+
+//                 int length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(lengthBuffer, 0));
+//                 if (length <= 0 || length > 100000000) throw new Exception("Invalid image length");
+
+//                 byte[] imageData = new byte[length];
+//                 bytesRead = 0;
+//                 while (bytesRead < imageData.Length)
+//                 {
+//                     int read = networkStream.Read(imageData, bytesRead, imageData.Length - bytesRead);
+//                     if (read == 0) throw new Exception("Connection closed");
+//                     bytesRead += read;
+//                 }
+//                 // Debug.Log(bytesRead);
+//                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
+//                 {
+//                     // Texture2D texture = new Texture2D(2, 2);
+//                     // texture.LoadRawTextureData(imageData);
+//                     // texture.Apply();
+//                     // rawImage.texture = texture;
+//                     // rawImage.SetNativeSize();
+
+//                     Texture2D texture = new Texture2D(2, 2);
+//                     texture.LoadImage(imageData);
+//                     // Debug.Log($"Applying texture of size {texture.width}x{texture.height}");
+//                     rawImage.texture = texture;
+//                     rawImage.SetNativeSize();
+//                 });
+//             }
+//         }
+//         catch (Exception e)
+//         {
+//             Debug.LogError(e);
+//         }
+//     }
+
+//     private void OnDestroy()
+//     {
+//         StopReceiving();
+//     }
+// }
 
 
 // using System;
