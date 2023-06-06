@@ -41,6 +41,10 @@ public class ButtonHandler : MonoBehaviour
         // Get the stream
         NetworkStream stream = client.GetStream();
 
+        // Send the "list" command
+        byte[] listCommand = Encoding.UTF8.GetBytes("list");
+        await stream.WriteAsync(listCommand, 0, listCommand.Length);
+
         // Create a buffer
         byte[] buffer = new byte[client.ReceiveBufferSize];
 
@@ -50,10 +54,8 @@ public class ButtonHandler : MonoBehaviour
         // Convert the buffer to a string
         string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-        Debug.Log(data);
         // Parse the JSON data
         List<Monitor> monitors = JsonConvert.DeserializeObject<List<Monitor>>(data);
-        Debug.Log(monitors);
         
         // Populate the dropdown
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
@@ -61,6 +63,35 @@ public class ButtonHandler : MonoBehaviour
             options.Add(new Dropdown.OptionData($"Monitor {monitor.id}: {monitor.info.width}x{monitor.info.height}"));
         }
         monitorDropdown.options = options;
+
+        // Close the stream and client
+        stream.Close();
+        client.Close();
+    }
+
+    public async void AddScreen()
+    {
+        // Create a TcpClient
+        TcpClient client = new TcpClient();
+
+        // Connect to the server
+        await client.ConnectAsync(host, basePort);
+
+        // Get the stream
+        NetworkStream stream = client.GetStream();
+
+        // Send the "list" command
+        byte[] listCommand = Encoding.UTF8.GetBytes("add");
+        await stream.WriteAsync(listCommand, 0, listCommand.Length);
+
+        // Create a buffer
+        byte[] buffer = new byte[client.ReceiveBufferSize];
+
+        // Read the stream into the buffer
+        int bytesRead = await stream.ReadAsync(buffer, 0, client.ReceiveBufferSize);
+
+        // Convert the buffer to a string
+        string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
         // Close the stream and client
         stream.Close();

@@ -8,8 +8,10 @@ from mss import mss
 from time import sleep
 import numpy as np
 import json
+import subprocess
 
 active_screencasts = {}
+running_programs = []
 
 def capture_and_send_screen(monitor_id, server_socket, stop_event):
     conn, _ = server_socket.accept()
@@ -91,6 +93,7 @@ def list_monitors(conn):
         monitor_list = [{"id": i, "info": monitor} for i, monitor in enumerate(monitors)]
         conn.sendall(json.dumps(monitor_list).encode())
     else:
+        print(monitors)
         for i, monitor in enumerate(monitors[1:], start=1):  # Exclude the first monitor as it's the "All in One" monitor
             print(f"Monitor {i}: {monitor}")
 
@@ -98,11 +101,41 @@ def handle_monitor_list_request(server_socket, stop_event):
     while not stop_event.is_set():
         try:
             conn, _ = server_socket.accept()
-            list_monitors(conn)
+            data = conn.recv(1024)
+            command = data.decode('utf-8').strip()
+            if command == "list":
+                list_monitors(conn)
+            elif command == "add":
+                add_program(conn)
+            elif command == "remove":
+                remove_program(conn)
             conn.close()
         except socket.error:
             break
     server_socket.close()
+
+def add_last_screen():
+    time.sleep(1.5)
+    last_monitor = len(mss().monitors) - 1
+    start_screencast(int(last_monitor), 9999 + int(last_monitor))
+
+# Run a new command line program
+def add_program(conn):
+    global running_programs
+    print(f"Adding screen.")
+    program = subprocess.Popen(['./createdummy'], stdout=subprocess.PIPE)
+    running_programs.append(program)
+    conn.sendall(str(len(running_programs)).encode())
+    add_last_screen()
+
+# End the last running command line program
+def remove_program(conn):
+    global running_programs
+    print(f"Removing screen.")
+    if running_programs:
+        program = running_programs.pop()
+        program.terminate()
+        conn.sendall(str(len(running_programs)).encode())
 
 def main():
     print("Welcome to VR Project!")
