@@ -1,3 +1,4 @@
+import os
 import io
 import time
 import socket
@@ -119,23 +120,46 @@ def add_last_screen():
     last_monitor = len(mss().monitors) - 1
     start_screencast(int(last_monitor), 9999 + int(last_monitor))
 
-# Run a new command line program
 def add_program(conn):
     global running_programs
     print(f"Adding screen.")
-    program = subprocess.Popen(['./createdummy'], stdout=subprocess.PIPE)
+    monitor_serial = int(time.time())
+    command = ['nohup', './createdummy', f'serial={monitor_serial}', f'name={monitor_serial}', '&']
+    program = subprocess.Popen(command, start_new_session=True)
     running_programs.append(program)
     conn.sendall(str(len(running_programs)).encode())
     add_last_screen()
 
-# End the last running command line program
 def remove_program(conn):
     global running_programs
     print(f"Removing screen.")
     if running_programs:
         program = running_programs.pop()
-        program.terminate()
+        try:
+            os.killpg(os.getpgid(program.pid), signal.SIGTERM)
+        except ProcessLookupError:
+            pass
         conn.sendall(str(len(running_programs)).encode())
+
+
+# Run a new command line program
+# def add_program(conn):
+#     global running_programs
+#     print(f"Adding screen.")
+#     monitor_serial = time.time()
+#     program = subprocess.Popen(['./createdummy', f"serial={monitor_serial}", f"name={monitor_serial}"], stdout=subprocess.PIPE)
+#     running_programs.append(program)
+#     conn.sendall(str(len(running_programs)).encode())
+#     add_last_screen()
+
+# End the last running command line program
+# def remove_program(conn):
+#     global running_programs
+#     print(f"Removing screen.")
+#     if running_programs:
+#         program = running_programs.pop()
+#         program.terminate()
+#         conn.sendall(str(len(running_programs)).encode())
 
 def main():
     print("Welcome to VR Project!")
