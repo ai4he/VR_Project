@@ -47,8 +47,8 @@ def send_openai_request(encoded_old_images, encoded_new_images):
     messages = [{
 	"role": "user",
         "content": [{
-		"role": "user", 
-		"content": prompt
+		"type": "text", 
+		"text": prompt
 	    },{
 		"type": "image_url",
 		"image_url": {
