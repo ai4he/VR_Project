@@ -10,15 +10,11 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        old_images = request.files.getlist('old_image_upload')
-        new_images = request.files.getlist('new_image_upload')
-
-        print(len(old_images))
-        for image in old_images:
-            print(image)
+        old_images = request.files['old_images']
+        new_images = request.files['new_images']
 	    
-        encoded_old_images = [encode_image_to_base64(image) for image in old_images]
-        encoded_new_images = [encode_image_to_base64(image) for image in new_images]
+        encoded_old_images = [encode_image_to_base64(old_images)]
+        encoded_new_images = [encode_image_to_base64(new_images)]
 
         # Prepare and send OpenAI API request here
         response = send_openai_request(encoded_old_images, encoded_new_images)
