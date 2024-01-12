@@ -45,18 +45,21 @@ def send_openai_request(encoded_old_images, encoded_new_images):
     prompt = system_prompt + goal + "\nGIVE_REFLECTION: "
 
     messages = [{
-	"role": "user", 
-	"content": prompt
-    },{
-	"type": "image_url",
-	"image_url": {
-	    "url": f"data:image/jpeg;base64,{encoded_old_images}"
-	}
-    },{
-	"type": "image_url",
-	"image_url": {
-	    "url": f"data:image/jpeg;base64,{encoded_new_images}"
-	}
+	"role": "user",
+        "content": [{
+		"role": "user", 
+		"content": prompt
+	    },{
+		"type": "image_url",
+		"image_url": {
+		    "url": f"data:image/jpeg;base64,{encoded_old_images}"
+		}
+	    },{
+		"type": "image_url",
+		"image_url": {
+		    "url": f"data:image/jpeg;base64,{encoded_new_images}"
+		}
+	    }]
     }]
 
     response = openai.ChatCompletion.create(
