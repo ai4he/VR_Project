@@ -10,7 +10,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-	goal = request.form['goal']
+	
         old_images = request.files['old_images']
         new_images = request.files['new_images']
 	    
@@ -42,7 +42,7 @@ def send_openai_request(encoded_old_images, encoded_new_images):
 	GET_GOAL:
 	""" # Your existing system prompt
    # goal = "I want to finish my homework on important people in tech"
-   
+    goal = request.form['goal']
     prompt = system_prompt + goal + "\nGIVE_REFLECTION: "
 
     messages = [{
