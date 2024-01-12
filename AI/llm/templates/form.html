@@ -8,19 +8,15 @@
             event.preventDefault();
 
             const goal = document.getElementById('goal').value;
-            const oldImages = document.getElementById('old_image_upload').files;
-            const newImages = document.getElementById('new_image_upload').files;
+            const oldImages = document.getElementById('old_image_upload').files[0];
+            const newImages = document.getElementById('new_image_upload').files[0];
             const outputDiv = document.getElementById('output');
 
             const formData = new FormData();
             formData.append('goal', goal);
 
-            for (let i = 0; i < oldImages.length; i++) {
-                formData.append('old_images[]', oldImages[i]);
-            }
-            for (let i = 0; i < newImages.length; i++) {
-                formData.append('new_images[]', newImages[i]);
-            }
+            formData.append('old_images', oldImages);
+            formData.append('new_images', newImages);
 
             try {
                 const response = await fetch('/', {
