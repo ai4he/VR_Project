@@ -22,20 +22,15 @@
                 formData.append('new_images[]', newImages[i]);
             }
 
-            try {
-                const response = await fetch('/', {
-                    method: 'POST',
-                    body: formData
-                });
+            const response = await fetch('/', {
+                method: 'POST',
+                body: formData
+            });
 
-                if (response.ok) {
-                    const textResponse = await response.text();
-                    outputDiv.innerHTML = textResponse;
-                } else {
-                    outputDiv.innerHTML = '<p>An error occurred while submitting the form.</p>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
+            if (response.ok) {
+                const textResponse = await response.text();
+                outputDiv.innerHTML = textResponse;
+            } else {
                 outputDiv.innerHTML = '<p>An error occurred while submitting the form.</p>';
             }
         }
@@ -53,7 +48,7 @@
         <label for="new_image_upload">Upload New Images:</label>
         <input type="file" id="new_image_upload" name="new_image_upload" multiple>
         <br>
-        <input type="submit" value="Submit">
+        <input type="submit" value="submit">
     </form>
 
     <div id="output"></div>

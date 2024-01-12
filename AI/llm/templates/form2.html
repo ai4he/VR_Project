@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Screens and Activities Form</title>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const session_id = document.getElementById('session_id').value;
+            const goal = document.getElementById('context_val').value;
+            const activities = document.getElementById('input_val').value;
+            const imageFile = document.getElementById('image_upload').files[0];
+            const outputDiv = document.getElementById('output');
+
+            const formData = new FormData();
+            formData.append('session_id', session_id);
+            formData.append('context_val', goal);
+            formData.append('input_val', activities);
+            formData.append('image', imageFile);
+
+            const response = await fetch('{{ url_for("submit") }}', {
+                method: 'POST',
+                body: formData  // Sending the FormData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                outputDiv.innerHTML = JSON.stringify(data);
+                if (data.hasOwnProperty('session_id')) {
+                    document.getElementById('session_id').value = data.session_id;
+                    document.getElementById('input_val').value = '';
+                }
+            } else {
+                outputDiv.innerHTML = '<p>An error occurred while submitting the form.</p>';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Screens and Activities Form</h1>
+    <form onsubmit="submitForm(event)" enctype="multipart/form-data">
+        <label for="session_id">Session ID:</label>
+        <input type="text" name="session_id" id="session_id">
+        <br>
+        <label for="context_val">Screens:</label>
+        <textarea name="context_val" id="context_val" rows="4" cols="50"></textarea>
+        <br>
+        <label for="input_val">Activities:</label>
+        <textarea name="input_val" id="input_val" rows="4" cols="50"></textarea>
+        <br>
+        <label for="image_upload">Upload Image:</label>
+        <input type="file" id="image_upload" name="image_upload">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="output"></div>
+</body>
+</html>
+
