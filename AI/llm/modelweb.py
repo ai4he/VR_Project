@@ -41,22 +41,23 @@ def send_openai_request(encoded_old_images, encoded_new_images):
 	GET_GOAL:
 	""" # Your existing system prompt
    # goal = "I want to finish my homework on important people in tech"
-    goal =""
+    goal = "I want to find the submission dates of a conference"
     prompt = system_prompt + goal + "\nGIVE_REFLECTION: "
 
-    messages = [{"role": "user", "content": prompt}]
-
-    for image in encoded_old_images:
-        messages.append({
-            "role": "user",
-            "content": f"data:image/jpeg;base64,{image}"
-        })
-
-    for image in encoded_new_images:
-        messages.append({
-            "role": "user",
-            "content": f"data:image/jpeg;base64,{image}"
-        })
+    messages = [{
+	"role": "user", 
+	"content": prompt
+    },{
+	"type": "image_url",
+	"image_url": {
+	    "url": f"data:image/jpeg;base64,{encoded_old_images}"
+	}
+    },{
+	"type": "image_url",
+	"image_url": {
+	    "url": f"data:image/jpeg;base64,{encoded_new_images}"
+	}
+    }]
 
     response = openai.ChatCompletion.create(
         model="gpt-4-vision-preview",
